@@ -12,7 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
+use App\Models\Evaluation;
 class ActivityResource extends Resource
 {
     protected static ?string $model = Activity::class;
@@ -116,6 +116,16 @@ class ActivityResource extends Resource
                 ]),
             ]);
     }
+
+public static function afterCreate(Activity $record): void
+{
+    Evaluation::create([
+        'user_id' => $record->user_id, // ou Auth::id()
+        'activity_id' => $record->id,
+        'decision' => 'pending_review',
+        // outros campos necessários
+    ]);
+}
 
     public static function getRelations(): array
     {
