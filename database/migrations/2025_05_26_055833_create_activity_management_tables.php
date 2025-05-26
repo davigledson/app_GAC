@@ -57,7 +57,7 @@ return new class extends Migration {
         Schema::create('evaluations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('activity_id')->constrained('activities')->onDelete('cascade');
-            $table->foreignId('evaluator_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('evaluator_id')->constrained('users')->onDelete('cascade')->nullable();
             $table->string('decision'); // aprovado, rejeitado, revisão
             $table->timestamp('evaluated_at')->nullable();
             $table->timestamps();
