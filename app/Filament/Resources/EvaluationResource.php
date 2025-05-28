@@ -19,39 +19,109 @@ class EvaluationResource extends Resource
     protected static ?string $modelLabel = 'Avaliação';
     protected static ?string $pluralModelLabel = 'Avaliações';
 
-    public static function form(Form $form): Form
-    {
-        return $form
+   public static function form(Form $form): Form
+{
+    return $form
+    ->schema([
+        // Seção Principal - Avaliação
+        Forms\Components\Section::make('Dados da Avaliação')
+            ->description('Informações básicas sobre a avaliação')
+            ->icon('heroicon-o-document-text')
             ->schema([
-                Forms\Components\Select::make('activity_id')
-                    ->relationship('activity', 'title')
-                    ->label('Atividade')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+                Forms\Components\Grid::make()
+                    ->schema([
+                        Forms\Components\Select::make('activity_id')
+                            ->relationship('activity', 'title')
+                            ->label('Atividade')
+                            ->placeholder('Selecione uma atividade')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpan(1)
+                            ->prefixIcon('heroicon-o-list-bullet'),
 
-                Forms\Components\Select::make('evaluator_id')
-                    ->relationship('evaluator', 'name')
-                    ->label('Avaliador')
-                    //->searchable()
-                    ->preload()
-                    ->required(),
-
-                Forms\Components\Select::make('decision')
-                    ->options([
-                        'approved' => 'Aprovado',
-                        'rejected' => 'Rejeitado',
-                        'pending_review' => 'Revisão Pendente',
+                        Forms\Components\Select::make('evaluator_id')
+                            ->relationship('evaluator', 'name')
+                            ->label('Avaliador')
+                            ->placeholder('Selecione um avaliador')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpan(1)
+                            ->prefixIcon('heroicon-o-user'),
                     ])
+                    ->columns(2),
+
+                Forms\Components\Grid::make()
+                    ->schema([
+                        Forms\Components\Select::make('decision')
+                            ->options([
+                                'approved' => 'Aprovado',
+                                'rejected' => 'Rejeitado',
+                                'pending_review' => 'Revisão Pendente',
+                            ])
+                            ->required()
+                            ->label('Decisão')
+                            ->native(false)
+                            ->columnSpan(1)
+                            ->prefixIcon('heroicon-o-check-circle'),
+
+                        Forms\Components\DateTimePicker::make('evaluated_at')
+                            ->label('Data da Avaliação')
+                            ->default(now())
+                            ->displayFormat('d/m/Y H:i')
+                            ->columnSpan(1)
+                            ->prefixIcon('heroicon-o-calendar'),
+                    ])
+                    ->columns(2),
+            ])
+            ->collapsible(),
+
+        // Seção de Feedback
+        Forms\Components\Section::make('Feedback da Avaliação')
+            ->description('Detalhes e comentários sobre a avaliação')
+            ->icon('heroicon-o-chat-bubble-left-ellipsis')
+            ->relationship('feedback')
+            ->schema([
+                // Campos hidden (ocultos mas essenciais)
+                Forms\Components\Hidden::make('evaluation_id')
+                    ->default(fn ($record) => $record?->id)
+                    ->dehydrated(),
+
+                Forms\Components\Hidden::make('activity_id')
+                    ->dehydrated(),
+
+                Forms\Components\Hidden::make('evaluator_id')
+                    ->dehydrated(),
+
+                // Campos visíveis
+                Forms\Components\Textarea::make('comments')
+                    ->label('Comentários')
+                    ->placeholder('Insira seus comentários sobre a avaliação...')
+                    ->rows(5)
+                    ->columnSpanFull()
+                    ->extraInputAttributes(['class' => 'min-h-[120px]']),
+
+                Forms\Components\TextInput::make('rating')
+                    ->label('Nota (1-10)')
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(10)
                     ->required()
-                    ->label('Decisão'),
+                    ->prefixIcon('heroicon-o-star')
+                    ->suffix('/10')
+                    ->columnSpan(1),
+            ])
+            ->afterStateHydrated(function ($set, $get, $record) {
+                $set('feedback.evaluation_id', $record?->id ?? $get('id'));
+                $set('feedback.activity_id', $record?->activity_id ?? $get('activity_id'));
+                $set('feedback.evaluator_id', $record?->evaluator_id ?? $get('evaluator_id'));
+            })
+            ->columns(2)
+            ->collapsible(),
+    ]);
 
-                Forms\Components\DateTimePicker::make('evaluated_at')
-                    ->label('Data da Avaliação')
-                    ->default(now()),
-            ]);
-    }
-
+}
     public static function table(Table $table): Table
     {
         return $table
