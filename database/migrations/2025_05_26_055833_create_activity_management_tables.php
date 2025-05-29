@@ -46,8 +46,8 @@ return new class extends Migration {
         // Feedbacks dados por avaliadores
         Schema::create('feedbacks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('activity_id')->constrained('activities')->onDelete('cascade');
-            $table->foreignId('evaluator_id')->constrained('users')->onDelete('cascade'); // Avaliador
+            $table->foreignId('activity_id')->constrained('activities')->onDelete('cascade')->nullable();
+            $table->foreignId('evaluator_id')->constrained('users')->onDelete('cascade')->nullable(); // Avaliador
             $table->text('comments')->nullable();
             $table->unsignedTinyInteger('rating')->nullable(); // 1 a 10
             $table->timestamp('created_at')->useCurrent();

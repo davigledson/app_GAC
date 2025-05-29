@@ -27,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-        ->brandName('Gestão de Atividades Complementares - Admin')
+        ->brandName('GAC - Admin')
             ->colors([
                 'primary' => Color::Blue,
                 //'primary' => Color::Amber,

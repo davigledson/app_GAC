@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\Relations\HasOne;
 class Evaluation extends Model
 {
     protected $fillable = [
@@ -21,15 +21,19 @@ class Evaluation extends Model
     protected static function booted()
     {
         static::created(function ($evaluation) {
+            // Cria o feedback automaticamente
+             dd($evaluation);
+
             $evaluation->updateActivityStatus();
         });
 
         static::updated(function ($evaluation) {
+         
             $evaluation->updateActivityStatus();
         });
 
         static::deleted(function ($evaluation) {
-            // Você pode adicionar lógica aqui se necessário
+             $evaluation->feedback()->delete();
         });
     }
 
@@ -54,6 +58,11 @@ class Evaluation extends Model
             $this->activity->updateQuietly(['status' => $status]);
         }
     }
+  public function feedback(): HasOne
+{
+    // Relacionamento simples usando a chave estrangeira padrão
+    return $this->hasOne(Feedback::class);
+}
 
     public function activity(): BelongsTo
     {
