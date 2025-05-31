@@ -10,11 +10,11 @@ class Feedback extends Model
     public $timestamps = false;
 
     protected $fillable = [
-         'evaluation_id', 
+         'evaluation_id',
         'activity_id',
         'evaluator_id',
         'comments',
-        'rating',
+        'validated_hours',
         'created_at',
     ];
     protected $table = 'feedbacks';

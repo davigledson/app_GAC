@@ -15,6 +15,9 @@ class Activity extends Model
         'category_id',
         'submitted_at',
         'status',
+        'request_complementary_hours',
+        'valid_complementary_hours',
+        'occurrence_data'
     ];
 
     protected static function booted()
@@ -46,6 +49,8 @@ class Activity extends Model
         // outros campos  (criar depois)
     ]);
     }
+
+    
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
