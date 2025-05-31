@@ -70,9 +70,9 @@ Forms\Components\TextInput::make('paid_complementary_hours')
                             Forms\Components\Select::make('activity_id')
                                 ->relationship('activity', 'title')
                                 ->label('Atividade')
-                                ->placeholder('Selecione uma atividade')
+
                                 ->searchable()
-                                ->preload()
+
                                 ->required()
                                 ->columnSpan(1)
                                 ->prefixIcon('heroicon-o-document-text')
