@@ -4,47 +4,42 @@ class User {
     +id: int
     +name: string
     +email: string
-    +role: string
+    +registration: string
+    +paid_complementary_hours: decimal
 }
 
 class Activity {
     +id: int
-    +user_id: int
-    +category_id: int
     +title: string
-    +description: text
     +status: string
-    +submitted_at: datetime
+    +request_complementary_hours: decimal
+    +valid_complementary_hours: decimal
+    +occurrence_data: datetime
 }
 
 class Category {
     +id: int
     +name: string
-    +description: string
 }
 
 class Evaluation {
     +id: int
-    +activity_id: int
-    +evaluator_id: int
     +decision: string
     +evaluated_at: datetime
 }
 
 class Feedback {
     +id: int
-    +activity_id: int
-    +evaluator_id: int
-    +comments: text
     +rating: int
-    +created_at: datetime
+    +validated_hours: decimal
 }
 
-User "1" --> "*" Activity : submits
-User "1" --> "*" Evaluation : performs
+User "1" --> "*" Activity
+User "1" --> "*" Evaluation
 Activity "1" --> "1" Category
 Activity "1" --> "*" Evaluation
 Activity "1" --> "*" Feedback
-Evaluation "1" --> "1" Feedback : has (hasOne)
+Evaluation "1" --> "1" Feedback
+User "1" --> "*" Feedback
 
 @enduml

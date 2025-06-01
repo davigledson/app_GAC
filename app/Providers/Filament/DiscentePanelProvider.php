@@ -28,7 +28,7 @@ class DiscentePanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->brandName('Gestão de Atividades Complementares - Discente')
+            ->brandName('GAC - Discente')
             ->discoverResources(in: app_path('Filament/Discente/Resources'), for: 'App\\Filament\\Discente\\Resources')
             ->discoverPages(in: app_path('Filament/Discente/Pages'), for: 'App\\Filament\\Discente\\Pages')
             ->pages([
