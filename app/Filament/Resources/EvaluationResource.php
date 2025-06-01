@@ -126,7 +126,7 @@ Forms\Components\TextInput::make('paid_complementary_hours')
                                 ->relationship('evaluator', 'name')
                                 ->label('Avaliador')
                                  ->afterStateHydrated(function ($component, $state, $record) {
-                                $component->state(auth()->id()) ;
+                                $component->state( Auth::id()) ;
                             })
                         ->disabled()
                         ->dehydrated(true)
@@ -236,6 +236,8 @@ Forms\Components\TextInput::make('paid_complementary_hours')
                 Tables\Columns\TextColumn::make('evaluated_at')
                     ->label('Avaliado em')
                     ->dateTime('d/m/Y H:i')
+
+                    ->since()
                     ->sortable(),
             ])
 
@@ -280,6 +282,7 @@ Forms\Components\TextInput::make('paid_complementary_hours')
                 })
 
             ])
+            ->defaultSort('id', 'desc')
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
