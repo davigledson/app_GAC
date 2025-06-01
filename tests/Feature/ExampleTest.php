@@ -10,10 +10,15 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    public function test_the_application_returns_a_successful_response(): void
-    {
-        $response = $this->get('/');
+    public function test_the_application_redirects_to_login(): void
+{
+    $response = $this->get('/');
 
-        $response->assertStatus(200);
-    }
+    // Verifica que redireciona com status 302
+    $response->assertStatus(302);
+
+    // Verifica que o redirecionamento é para a rota 'filament.admin.login'
+    $response->assertRedirect(route('filament.admin.auth.login'));
+}
+
 }

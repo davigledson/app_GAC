@@ -15,7 +15,41 @@ class Activity extends Model
         'category_id',
         'submitted_at',
         'status',
+        'request_complementary_hours',
+        'valid_complementary_hours',
+        'occurrence_data'
     ];
+
+    protected static function booted()
+    {
+        static::created(function ($activity) {
+            $activity->createEvaluation();
+        });
+
+        static::updated(function ($activity) {
+
+        });
+
+        static::deleted(function ($activity) {
+
+
+        });
+
+        static::saved(function ($activity) {
+
+        });
+    }
+
+    public function createEvaluation(){
+        Evaluation::create([
+        'user_id' => $this->user_id, // ou Auth::id()
+        'activity_id' => $this->id,
+        'decision' => 'pending_review',
+
+        // outros campos  (criar depois)
+    ]);
+    }
+
 
     public function user(): BelongsTo
     {

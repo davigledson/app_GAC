@@ -1,0 +1,45 @@
+@startuml
+
+class User {
+    +id: int
+    +name: string
+    +email: string
+    +registration: string
+    +paid_complementary_hours: decimal
+}
+
+class Activity {
+    +id: int
+    +title: string
+    +status: string
+    +request_complementary_hours: decimal
+    +valid_complementary_hours: decimal
+    +occurrence_data: datetime
+}
+
+class Category {
+    +id: int
+    +name: string
+}
+
+class Evaluation {
+    +id: int
+    +decision: string
+    +evaluated_at: datetime
+}
+
+class Feedback {
+    +id: int
+    +rating: int
+    +validated_hours: decimal
+}
+
+User "1" --> "*" Activity
+User "1" --> "*" Evaluation
+Activity "1" --> "1" Category
+Activity "1" --> "*" Evaluation
+Activity "1" --> "*" Feedback
+Evaluation "1" --> "1" Feedback
+User "1" --> "*" Feedback
+
+@enduml

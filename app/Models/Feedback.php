@@ -10,13 +10,14 @@ class Feedback extends Model
     public $timestamps = false;
 
     protected $fillable = [
+         'evaluation_id',
         'activity_id',
         'evaluator_id',
         'comments',
-        'rating',
+        'validated_hours',
         'created_at',
     ];
-
+    protected $table = 'feedbacks';
     protected $casts = [
         'created_at' => 'datetime',
     ];
@@ -29,5 +30,10 @@ class Feedback extends Model
     public function evaluator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'evaluator_id');
-    }
+   }
+
+ public function evaluation(): BelongsTo
+{
+    return $this->belongsTo(Evaluation::class);
+}
 }

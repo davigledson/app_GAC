@@ -16,8 +16,16 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $modelLabel = 'Categoria';  // Singular
+    protected static ?string $pluralModelLabel = 'Categorias';  // Plural
+    protected static ?string $navigationLabel = 'Categorias';
+    public static function getNavigationGroup(): ?string
+{
+    return 'Administração';
+}
 
     public static function form(Form $form): Form
     {
