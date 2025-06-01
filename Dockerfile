@@ -3,7 +3,7 @@ FROM richarvey/nginx-php-fpm:latest
 COPY . .
 
 # Copia o script de inicialização
-COPY 00-laravel-deploy.sh /start.sh
+COPY scripts/00-laravel-deploy.sh /start.sh
 RUN chmod +x /start.sh
 
 # Configurações de ambiente
