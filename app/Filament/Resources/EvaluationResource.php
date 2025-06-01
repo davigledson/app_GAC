@@ -149,11 +149,9 @@ Forms\Components\TextInput::make('paid_complementary_hours')
 
 
 
-                        Forms\Components\DateTimePicker::make('evaluated_at')
-                            ->label('Data da Avaliação')
-                            ->default(now())
-                            ->displayFormat('d/m/Y H:i')
-                            ->columnSpan(1),
+
+
+
                     ])
                     ->columns(2),
             ])
@@ -189,7 +187,7 @@ Forms\Components\TextInput::make('paid_complementary_hours')
                     ->rows(6)
                     ->columnSpanFull()
                     ->extraInputAttributes(['class' => 'min-h-[150px]'])
-                    ->helperText('Descreva pontos fortes, áreas de melhoria e justificativa'),
+                    ->helperText('Descreva se foi deferido, se foi indeferido ou motivos'),
 
 
             ])

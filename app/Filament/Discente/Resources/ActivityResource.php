@@ -129,6 +129,7 @@ public static function form(Form $form): Form
                     Forms\Components\DateTimePicker::make('submitted_at')
                         ->label('Data de Submissão')
                         ->helperText('Data e hora da submissão')
+                        ->disabled()
                         ->displayFormat('d/m/Y H:i')
                          ->default(now())
                         ->seconds(false)
