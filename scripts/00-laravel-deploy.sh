@@ -1,15 +1,28 @@
-#!/usr/bin/env bashAdd commentMore actions
-echo "Running composer"
-composer global require hirak/prestissimo
-composer install --no-dev --working-dir=/var/www/html
+#!/usr/bin/env bash
 
-echo "Caching config..."
+echo "🧹 Ajustando permissões..."
+chown -R www-data:www-data /var/www/html
+chmod -R 755 /var/www/html
+
+echo "📦 Instalando dependências do Composer..."
+composer install --no-dev --optimize-autoloader --working-dir=/var/www/html
+
+if [ ! -f /var/www/html/vendor/autoload.php ]; then
+    echo "❌ vendor/autoload.php não encontrado. Composer falhou!"
+    exit 1
+fi
+
+echo "⚙️ Cacheando configuração..."
 php artisan config:cache
 
-echo "Caching routes..."
+echo "🧭 Cacheando rotas..."
 php artisan route:cache
 
-php artisan filament:optimize
+echo "🎨 Otimizando Filament..."
+php artisan filament:optimize || true
 
-echo "Running migrations..."
-php artisan migrate --force
+echo "🛠️ Executando migrations..."
+php artisan migrate --force || true
+
+echo "🚀 Iniciando servidor..."
+exec supervisord -n
