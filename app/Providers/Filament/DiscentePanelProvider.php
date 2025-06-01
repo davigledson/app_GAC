@@ -17,6 +17,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Pages\Auth\Register;
 
 class DiscentePanelProvider extends PanelProvider
 {
@@ -28,6 +30,9 @@ class DiscentePanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->login()
+            ->registration(Register::class)
+            ->profile(EditProfile::class)
             ->brandName('GAC - Discente')
             ->discoverResources(in: app_path('Filament/Discente/Resources'), for: 'App\\Filament\\Discente\\Resources')
             ->discoverPages(in: app_path('Filament/Discente/Pages'), for: 'App\\Filament\\Discente\\Pages')

@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         // Usuários
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('aluno');
+            $table->string('role')->default('student');
         });
 
         // Categorias de atividades
