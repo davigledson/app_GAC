@@ -67,8 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->auth(fn ($user) => true);
+            ]);
 
     }
 }
