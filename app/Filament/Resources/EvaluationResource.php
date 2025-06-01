@@ -19,7 +19,7 @@ class EvaluationResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-star';
     protected static ?string $modelLabel = 'Avaliação';
     protected static ?string $pluralModelLabel = 'Avaliações';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = -1;
     public static function getNavigationGroup(): ?string
 {
     return 'Avaliações';

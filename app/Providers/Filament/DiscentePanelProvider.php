@@ -30,6 +30,8 @@ class DiscentePanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->favicon(asset('imgs/chapeu.svg'))
+             ->brandLogo(asset('imgs/uern-logo.png'))
             ->login()
             ->registration(Register::class)
             ->profile(EditProfile::class)

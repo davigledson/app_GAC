@@ -28,6 +28,8 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
         ->brandName('GAC - Admin')
+        ->brandLogo(asset('imgs/uern-logo.png'))
+         ->favicon(asset('imgs/chapeu.svg'))
             ->colors([
                 'primary' => Color::Blue,
                 //'primary' => Color::Amber,
@@ -40,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
             NavigationGroup::make()
                 ->label('Blog')
               ,
-           
+
         ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
