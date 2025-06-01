@@ -25,9 +25,12 @@ class User extends Authenticatable
         'registration',
         'initiation_period',
         'course',
-        'paid_complementary_hours'
+        'paid_complementary_hours',
+        'role',
     ];
-
+protected $attributes = [
+    'role' => 'student' // Valor padrão
+];
     /**
      * The attributes that should be hidden for serialization.
      *
