@@ -1,20 +1,25 @@
-FROM richarvey/nginx-php-fpm:latest
+FROM php:8.2-apache
+RUN apt-get update && apt-get install -y \
+    zip unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev libicu-dev libpq-dev \
+    && docker-php-ext-install pdo pdo_mysql zip intl
+    
+RUN a2enmod rewrite
+
+WORKDIR /var/www/html
 
 COPY . .
 
-# Configurações de ambiente
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_SIDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
+RUN composer install --no-dev --optimize-autoloader
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Comando para iniciar o container
-CMD ["/start.sh"]
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
+
+RUN php artisan key:generate \
+    && php artisan config:cache \
+    && php artisan route:cache
+
+CMD ["apache2-foreground"]
