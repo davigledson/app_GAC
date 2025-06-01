@@ -67,9 +67,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
             ->auth(function (\App\Models\User $user) {
                     return $user->isAdmin(true); // APENAS PARA TESTE EM DEPLOY!!!
-})
+            });
     }
 }
