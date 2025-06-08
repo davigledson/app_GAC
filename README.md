@@ -2,6 +2,20 @@
 
 Sistema de Gestão de Atividades Complementares desenvolvido como parte da disciplina de Engenharia de Software no curso de Ciências da Computação.
 
+
+**Product Owner (PO)**  
+- Davi Gledson da Silva Benedito  
+
+**Scrum Master**  
+- Jorge Luiz Silva Braz  
+
+**Developers Team**  
+- Davi Gledson da Silva Benedito  
+
+- Matheus Lucas Dantas Lopes  
+
+- Ewerson de Souza Junior  
+
 ## Clonando o Repositório
 
 ```sh

@@ -1,0 +1,5 @@
+link da prototipagem via Figma
+https://www.figma.com/design/CO6mzDHdb6FTf0ZGGFWKJQ/GAC?node-id=0-1&t=j6unh7VxAI4LafXo-1
+
+modelo do banco de dados
+https://dbdiagram.io/d/db_gac-683400e6b9f7446da31f74f3
