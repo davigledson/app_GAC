@@ -20,6 +20,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 class ActivityResource extends Resource
 {
+
+    public static function getEloquentQuery(): Builder
+{
+    $user = Auth::user();
+   // dd($user);
+
+    if ($user->role === 'student' /* ou 'aluno', conforme seu banco */) {
+        return parent::getEloquentQuery()
+            ->where('user_id', $user->id);
+    }
+
+    return parent::getEloquentQuery();
+}
     protected static ?string $model = Activity::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document';
