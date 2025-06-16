@@ -84,8 +84,19 @@ php artisan migrate
 
 
 ```
+### 6. Acesse o painel:
+#### Crie um superusuario:
+```sh
+php artisan make:filament-user
 
+```
+#### Faça login:
 
+```sh
+
+http://127.0.0.1:8000/admin/login
+
+```
 ## Dependências do Projeto
 
 
