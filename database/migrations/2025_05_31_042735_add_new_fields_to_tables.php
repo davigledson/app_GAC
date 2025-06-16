@@ -14,7 +14,7 @@ return new class extends Migration
          Schema::table('activities', function (Blueprint $table) {
             $table->string('request_complementary_hours');
             $table->string('valid_complementary_hours')->nullable();
-            $table->timestamp('occurrence_data');
+            $table->timestamp('occurrence_data')->nullable(); 
         });
 
          Schema::table('users', function (Blueprint $table) {
@@ -33,7 +33,7 @@ return new class extends Migration
         Schema::table('activities', function (Blueprint $table) {
             $table->dropColumn('request_complementary_hours');
             $table->dropColumn('valid_complementary_hours');
-            $table->dropColumn('occurrence data');
+            $table->dropColumn('occurrence_data');
         });
     }
 };

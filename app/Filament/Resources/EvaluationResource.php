@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Str;
 class EvaluationResource extends Resource
 {
     protected static ?string $model = Evaluation::class;
@@ -203,91 +205,186 @@ Forms\Components\TextInput::make('paid_complementary_hours')
 
         ]);
 }
-    public static function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('activity.title')
-                    ->label('Atividade')
-                    ->searchable()
-                    ->sortable(),
+public static function table(Table $table): Table
+{
+    return $table
+        ->columns([
+            Tables\Columns\TextColumn::make('activity.title')
+                ->label('ATIVIDADE')
+                ->searchable()
+                ->sortable()
+                ->weight('medium')
+                ->description(fn ($record) => Str::limit($record->activity->description, 50))
+                ->tooltip(fn ($record) => $record->activity->description)
+                ->wrap()
+                ->size('sm'),
 
-                Tables\Columns\TextColumn::make('evaluator.name')
-                    ->label('Avaliador')
-                    ->searchable()
-
-                    ->sortable(),
-
-                Tables\Columns\BadgeColumn::make('decision')
-                    ->label('Decisão')
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'approved' => 'Aprovado',
-                        'rejected' => 'Rejeitado',
-                        'pending_review' => 'Revisão Pendente',
+            Tables\Columns\TextColumn::make('activity.user.name')
+                ->label('ALUNO')
+                ->searchable()
+                ->sortable()
+                ->description(function ($record) {
+                     return  $record->activity->user->email || 'N/A';
                     })
-                    ->colors([
-                        'success' => 'approved',
-                        'danger' => 'rejected',
-                        'warning' => 'pending_review',
-                    ]),
+                ->weight('medium')
+                ->size('sm'),
 
-                Tables\Columns\TextColumn::make('evaluated_at')
-                    ->label('Avaliado em')
-                    ->dateTime('d/m/Y H:i')
-
-                    ->since()
-                    ->sortable(),
-            ])
-
-            ->filters([
-                Tables\Filters\SelectFilter::make('decision')
-                    ->options([
-                        'approved' => 'Aprovado',
-                        'rejected' => 'Rejeitado',
-                        'pending_review' => 'Revisão Pendente',
-                    ])
-                    ->label('Decisão'),
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
-                 Action::make('avaliar')
-                ->label('Avaliar')
-                ->form([
-                    Forms\Components\Select::make('decision')
-                        ->label('Decisão')
-                        ->options([
-                            'approved' => 'Aprovado',
-                            'rejected' => 'Rejeitado',
-                            'pending_review' => 'Revisão Pendente',
-                        ])
-                        ->required(),
-
-                    Forms\Components\Textarea::make('comentario')
-                        ->label('Comentário')
-                        ->maxLength(1000),
-                ])
-                ->action(function (Evaluation $record, array $data) {
-                    $record->update([
-                        'decision' => $data['decision'],
-                        'evaluated_at' => now(),
-                    ]);
-
-                    if (!empty($data['comentario'])) {
-                        $record->comentario = $data['comentario'];
-                        $record->save();
-                    }
+            Tables\Columns\TextColumn::make('evaluator.name')
+                ->label('AVALIADOR')
+                ->searchable()
+                ->sortable()
+                ->description(function ($record) {
+                     return $record->evaluator && $record->evaluator->email ? $record->evaluator->email : 'N/A';
                 })
+                ->weight('medium')
+                ->size('sm')
+                ->badge()
+                ->color('info'),
 
+            Tables\Columns\BadgeColumn::make('decision')
+                ->label('STATUS')
+                ->formatStateUsing(fn (string $state): string => match ($state) {
+                    'approved' => 'Aprovado',
+                    'rejected' => 'Rejeitado',
+                    'pending_review' => 'Pendente',
+                })
+                ->colors([
+                    'success' => 'approved',
+                    'danger' => 'rejected',
+                    'warning' => 'pending_review',
+                ])
+                ->icon(fn (string $state): string => match ($state) {
+                    'approved' => 'heroicon-o-check-circle',
+                    'rejected' => 'heroicon-o-x-circle',
+                    'pending_review' => 'heroicon-o-clock',
+                })
+                ->size('md'),
+
+            Tables\Columns\TextColumn::make('evaluated_at')
+                ->label('DATA AVALIAÇÃO')
+                ->dateTime('d/m/Y H:i')
+                ->since()
+                ->sortable()
+                ->description(function ($record) {
+                    if (!$record->evaluated_at) {
+                        return 'Não avaliado';
+                    }
+
+                    $evaluatedAt = is_string($record->evaluated_at)
+                        ? \Carbon\Carbon::parse($record->evaluated_at)
+                        : $record->evaluated_at;
+
+                    return 'Avaliado ' . $evaluatedAt->diffForHumans();
+                })
+                ->color(fn ($record) => $record->evaluated_at ? 'success' : 'danger')
+                ->size('sm')
+                ->weight('medium'),
+        ])
+        ->filters([
+            Tables\Filters\SelectFilter::make('decision')
+                ->options([
+                    'approved' => 'Aprovado',
+                    'rejected' => 'Rejeitado',
+                    'pending_review' => 'Pendente',
+                ])
+                ->label('Status da Avaliação')
+                ->native(false),
+
+            Tables\Filters\Filter::make('recentes')
+                ->label('Avaliações Recentes')
+                ->query(fn (Builder $query): Builder => $query->where('evaluated_at', '>=', now()->subDays(7)))
+                ->indicator('Últimos 7 dias'),
+
+            Tables\Filters\Filter::make('pending')
+                ->label('Pendentes de Avaliação')
+                ->query(fn (Builder $query): Builder => $query->whereNull('evaluated_at'))
+                ->indicator('Pendentes'),
+        ])
+        ->actions([
+            Tables\Actions\ActionGroup::make([
+                Tables\Actions\ViewAction::make()
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
+
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil')
+                    ->color('primary'),
+
+                Action::make('avaliar')
+                    ->label('Avaliar')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->color('success')
+                    ->modalHeading('Avaliar Atividade')
+                    ->modalDescription(fn ($record) => "Você está avaliando a atividade: {$record->activity->title}")
+                    ->modalSubmitActionLabel('Salvar Avaliação')
+                    ->form([
+                        Forms\Components\Select::make('decision')
+                            ->label('Decisão')
+                            ->options([
+                                'approved' => 'Aprovado',
+                                'rejected' => 'Rejeitado',
+                                'pending_review' => 'Revisão Pendente',
+                            ])
+                            ->required()
+                            ->native(false),
+
+                        Forms\Components\Textarea::make('comentario')
+                            ->label('Comentário')
+                            ->placeholder('Digite seu feedback detalhado...')
+                            ->maxLength(1000)
+                            ->columnSpanFull()
+                            ->rows(5),
+                    ])
+                    ->action(function (Evaluation $record, array $data) {
+                        $record->update([
+                            'decision' => $data['decision'],
+                            'evaluated_at' => now(),
+                            'comentario' => $data['comentario'] ?? null,
+                        ]);
+
+                        Notification::make()
+                            ->title('Avaliação registrada!')
+                            ->success()
+                            ->send();
+                    }),
             ])
-            ->defaultSort('id', 'desc')
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
-    }
+            ->tooltip('Ações')
+            ->color('primary')
+            ->icon('heroicon-s-cog-6-tooth')
+            ->button(),
+        ])
+        ->defaultSort('evaluated_at', 'asc')
+        ->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->requiresConfirmation(),
 
+                Tables\Actions\BulkAction::make('approve')
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->action(fn (Evaluation $records) => $records->each->update(['decision' => 'approved']))
+                    ->requiresConfirmation(),
+
+                Tables\Actions\BulkAction::make('reject')
+                    ->icon('heroicon-o-x-mark')
+                    ->color('danger')
+                    ->action(fn (Evaluation $records) => $records->each->update(['decision' => 'rejected']))
+                    ->requiresConfirmation(),
+            ]),
+        ])
+        ->emptyStateHeading('Nenhuma avaliação encontrada')
+        ->emptyStateDescription('Nenhum dicente requiriu nenhuma avaliação recentemente')
+        ->emptyStateIcon('heroicon-o-document-magnifying-glass')
+        //->emptyStateActions([
+            //Tables\Actions\CreateAction::make()
+            //    ->label('Criar Avaliação')
+          //      ->icon('heroicon-o-plus'),
+        //])
+        ->deferLoading()
+        ->persistSearchInSession()
+        ->persistColumnSearchesInSession();
+}
     public static function getRelations(): array
     {
         return [
