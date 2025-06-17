@@ -11,6 +11,7 @@ class Activity extends Model
     protected $fillable = [
         'user_id',
         'title',
+        'coordenador_id',
         'description',
         'category_id',
         'submitted_at',
@@ -56,6 +57,10 @@ class Activity extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function coordinator(): BelongsTo
+    {
+        return $this->belongsTo(User::class,'coordenador_id');
+    }
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
