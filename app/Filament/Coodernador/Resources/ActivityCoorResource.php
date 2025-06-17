@@ -20,7 +20,23 @@ class ActivityCoorResource extends Resource
 {
     protected static ?string $model = Activity::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+
+       public static function getEloquentQuery(): Builder
+{
+    $user = Auth::user();
+   // dd($user);
+
+    if ($user->role === 'coordinator') {
+        return parent::getEloquentQuery()
+            ->where('coordenador_id', $user->id);
+    }
+
+    return parent::getEloquentQuery();
+}
+  protected static ?string $modelLabel = 'Atividade';  // Singular
+    protected static ?string $pluralModelLabel = 'Atividades';  // Plural
+    protected static ?string $navigationLabel = 'Atividades';
 
 public static function form(Form $form): Form
 {
@@ -33,6 +49,21 @@ public static function form(Form $form): Form
                     Forms\Components\Select::make('user_id')
                         ->relationship('user', 'name')
                         ->label('Estudante')
+                        ->searchable()
+                        ->preload()
+                        ->placeholder('Selecione um estudante')
+                        ->helperText('Selecione o estudante responsável pela atividade')
+
+                        //->default(fn () =>  Auth::id())
+                        //->preload()
+                        //->disabled()
+                        //->dehydrated(true)
+                        ->required()
+
+                        ->columnSpan(1),
+                         Forms\Components\Select::make('coordenador_id')
+                        ->relationship('user', 'name')
+                        ->label('Coordenador')
 
                         ->default(fn () =>  Auth::id())
                         //->preload()
@@ -242,14 +273,7 @@ public static function table(Table $table): Table
                     ? "Validated: {$record->valid_complementary_hours} hrs"
                     : null),
 
-            Tables\Columns\TextColumn::make('submitted_at')
-                ->label('Data de Submissão')
-                ->dateTime('d/m/Y H:i')
-                ->sortable()
-                ->icon('heroicon-o-calendar')
-                ->since()
-                ->toggleable()
-                ,
+
 
             Tables\Columns\BadgeColumn::make('status')
     ->label('Status')
@@ -274,7 +298,7 @@ public static function table(Table $table): Table
     }),
 
             Tables\Columns\TextColumn::make('occurrence_data')
-                ->label('Data do Evento')
+                ->label('Data da ocorrência')
                 ->dateTime('d/m/Y')
                 ->since()
 ->toggleable()
@@ -328,9 +352,11 @@ public static function table(Table $table): Table
 
             ]),
         ])
+       ->defaultSort('id', 'desc')// Ordena por data de submissão (mais recente primeiro)
         ->emptyStateActions([
             Tables\Actions\CreateAction::make(),
         ])
+
         ;
 }
 

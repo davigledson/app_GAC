@@ -83,7 +83,7 @@ class Evaluation extends Model
 
     public function activity(): BelongsTo
     {
-        return $this->belongsTo(Activity::class)->with('user');
+        return $this->belongsTo(Activity::class);
     }
 
     public function evaluator(): BelongsTo
