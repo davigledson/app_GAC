@@ -81,7 +81,7 @@ class UserResource extends Resource
                             ->columnSpan(1)
                             ->prefixIcon('heroicon-o-clock'),
 
-                        
+
                     ]),
 
                 Forms\Components\Section::make('Metadados')
@@ -131,13 +131,15 @@ class UserResource extends Resource
                     ->label('Tipo')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'admin' => 'danger',
-                        'teacher' => 'warning',
-                        default => 'success',
+                        'admin' => 'info',
+                        'coordinator'=> 'success',
+                        'student' => 'warning',
+                       // default => '',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'student' => 'Aluno',
-                        'teacher' => 'Professor',
+                        'coordinator'=> 'Coordenador',
+                        //'teacher' => 'Professor',
                         'admin' => 'Admin',
                     }),
 
